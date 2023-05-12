@@ -1,0 +1,24 @@
+1 Hafs	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%AD%D9%81%D8%B5_%D8%B9%D9%86_%D8%B9%D8%A7%D8%B5%D9%85.pdf
+2
+3 Qaloon	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D9%82%D8%A7%D9%84%D9%88%D9%86_%D8%B9%D9%86_%D9%86%D8%A7%D9%81%D8%B9.pdf
+4 Warsh	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D9%88%D8%B1%D8%B4_%D8%B9%D9%86_%D9%86%D8%A7%D9%81%D8%B9.pdf
+5
+6 Al-Bazzi from Ibn Kathir	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%A7%D9%84%D8%A8%D8%B2%D9%8A_%D8%B9%D9%86_%D8%A7%D8%A8%D9%86_%D9%83%D8%AB%D9%8A%D8%B1.pdf
+7 Qunbal from Ibn Kathir	https://upload.wikimedia.org/wikipedia/commons/4/49/%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D9%82%D9%86%D8%A8%D9%84_%D8%B9%D9%86_%D8%A7%D8%A8%D9%86_%D9%83%D8%AB%D9%8A%D8%B1.pdf
+8 Douri from Abu Amr	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D9%8A_%D8%B9%D9%86_%D8%A3%D8%A8%D9%8A_%D8%B9%D9%85%D8%B1%D9%88.pdf
+9 Soussi from Abu Amr	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%A7%D9%84%D8%B3%D9%88%D8%B3%D9%8A_%D8%B9%D9%86_%D8%A3%D8%A8%D9%8A_%D8%B9%D9%85%D8%B1%D9%88.pdf
+10 Hisham from Ibn Amer	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D9%87%D8%B4%D8%A7%D9%85_%D8%B9%D9%86_%D8%A7%D8%A8%D9%86_%D8%B9%D8%A7%D9%85%D8%B1.pdf
+11 Ibn Thakwan from Ibn Amer	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%A7%D8%A8%D9%86_%D8%B0%D9%83%D9%88%D8%A7%D9%86_%D8%B9%D9%86_%D8%A7%D8%A8%D9%86_%D8%B9%D8%A7%D9%85%D8%B1.pdf
+12 Shuba from Asim	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%B4%D8%B9%D8%A8%D8%A9_%D8%B9%D9%86_%D8%B9%D8%A7%D8%B5%D9%85.pdf
+13 Khalaf from Hamza	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%AE%D9%84%D9%81_%D8%B9%D9%86_%D8%AD%D9%85%D8%B2%D8%A9.pdf
+14 Khalad from Hamza	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%AE%D9%84%D8%A7%D8%AF_%D8%B9%D9%86_%D8%AD%D9%85%D8%B2%D8%A9.pdf
+15 Abu al-Harith from al-Kassai	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%A3%D8%A8%D9%8A_%D8%A7%D9%84%D8%AD%D8%A7%D8%B1%D8%AB_%D8%B9%D9%86_%D8%A7%D9%84%D9%83%D8%B3%D8%A7%D8%A6%D9%8A.pdf
+16 Al-Douri from Al-Kasai	https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81_%D8%A8%D8%B1%D9%88%D8%A7%D9%8A%D8%A9_%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D9%8A_%D8%B9%D9%86_%D8%A7%D9%84%D9%83%D8%B3%D8%A7%D8%A6%D9%8A.pdf
+17 Ibn Wardan from Abu Jaafar	Not Found
+18 Ibn Jammaz from Abu Jaafar	Not Found
+19 
+20 
+21 
+22 
+
+
