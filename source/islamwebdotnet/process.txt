@@ -1,0 +1,38 @@
+I went to here: https://audio.islamweb.net/audio/index.php?page=rewayat
+They list 21 readings they have as well as couple other links
+Each reading has a link to download a pdf of the whole quran
+
+In case they're later delisted, the links to get to the pdf online take a standard form:
+https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+where the name is placed in the next to last path location. Here's an example for warsh:
+https://dl2.islamweb.net/Audio_Path/quran_list/warsh/quran.pdf
+Simply take the filename, caps or no caps, numbers or no numbers, exactly as is, and place the name there.
+That's the link where I originally got it from.
+
+
+
+1 Hafs    https://dl2.islamweb.net/Audio_Path/quran_list/hafs/quran.pdf
+2
+3 Qaloon    https://dl2.islamweb.net/Audio_Path/quran_list/qaloon/quran.pdf
+4 Warsh    https://dl2.islamweb.net/Audio_Path/quran_list/warsh/quran.pdf
+5
+6 Al-Bazzi from Ibn Kathir    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+7 Qunbal from Ibn Kathir    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+8 Douri from Abu Amr    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+9 Soussi from Abu Amr    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+10 Hisham from Ibn Amer    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+11 Ibn Thakwan from Ibn Amer    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+12 Shuba from Asim    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+13 Khalaf from Hamza    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+14 Khalad from Hamza    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+15 Abu al-Harith from al-Kassai    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+16 Al-Douri from Al-Kasai    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+17 Ibn Wardan from Abu Jaafar    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+18 Ibn Jammaz from Abu Jaafar    https://dl2.islamweb.net/Audio_Path/quran_list/<name here>/quran.pdf
+19 
+20 
+21 
+22 
+
+
+ 
