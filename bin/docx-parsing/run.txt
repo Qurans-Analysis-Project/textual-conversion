@@ -1,0 +1,2 @@
+An example run command from the top directory
+python ./bin/doc-pull-text/doc-pull-text.py --source ./source --out ./generated/text/

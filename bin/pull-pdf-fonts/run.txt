@@ -1,0 +1,1 @@
+python ./bin/pull-pdf-fonts/pull-pdf-fonts.py --source ./source --out ./generated/out-fonts.json
