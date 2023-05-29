@@ -3,14 +3,12 @@ There are reportedly more than 30 different narrarations and readings in existan
 
 Both the source PDFs and the generated UTF-8 are free to distribute.
 
-## source 
-The source folder provides the Quran narrarations and readings collected in their received PDF form.
+## source
+The source folder provides the Quran narrarations and readings collected in their received PDF, DOC, or DOCX form.
 
-## intermediate
-The intermediate folder provides generated data from intermediate steps that can be useful for process analysis and verification as well as populating databases and further analysis with future tools. The data format is typically JSON.
-
-## generated 
+## generated
 The generated folder provides the resulting UTF-8 texts for each Quran. These will be in TXT files.
+It also provides the parsed JSON files for each narraration. Breaking down by chapter, chapter title, verses, and individual words. These will be JSON files.
 
 ## bin
-The script performing the parsing and generation
+The scripts performing the parsing and generation
