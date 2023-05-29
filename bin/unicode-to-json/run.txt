@@ -1,0 +1,2 @@
+An example run command from the top directory
+python ./bin/unicode-to-json/unicode-to-json.py --source ./generated/text --out ./generated/json/

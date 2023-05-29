@@ -3,7 +3,6 @@ from argparse import ArgumentParser
 #from os.path import isdir, isfile
 from pathlib import Path
 from typing import Tuple, List
-from json import dumps
 
 
 def verify_input(inpath: str) -> Tuple[Path,str]:
@@ -63,7 +62,5 @@ if __name__ == '__main__':
         Path( *(doc.parts[:-1]) ).mkdir(parents=True, exist_ok=True) # create parent directory structure if it doesn't already exist
         doc.write_bytes(txt) # write out
         print(f"{doc.stem} {doc.name} complete.")
-
-        
 
     print("Complete. Exiting.")
