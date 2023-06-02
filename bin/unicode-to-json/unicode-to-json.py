@@ -46,10 +46,16 @@ def verify_output(outpath: str) -> Path:
 
 
 def split_into_chapters(txt: str) -> List[str]:
-    chapters = txt.split('سُورَةُ')[1:]
-    # .split eliminates the delimiter so have to add back 'سُورَةُ' to the beginning of every chapter
+    if txt.find('سُورَةُ') > -1:
+        delim = 'سُورَةُ'
+    elif txt.find('سُوْرَةُ') > -1:
+        delim = 'سُوْرَةُ'
+    else:
+        raise LookupError("Could not find chapter delimiter")
+    chapters = txt.split(delim)[1:]
+    # .split eliminates the delimiter so have to add back the delimiter to the beginning of every chapter
     for i in range(len(chapters)):
-        chapters[i] = "سُورَةُ"+chapters[i]
+        chapters[i] = delim+chapters[i]
     return chapters
 
 
@@ -58,16 +64,17 @@ def split_chapter_into_verses(txt:str) -> dict:
     Return a chapter object of form:
     Chapter {
         "name": String,
-        "verses": List[Verse]
+        "text": String,
+        "verses": Object[int:Verse]
     }
     Verse object {
         "arabic_num": String
-        "text": String,
-        "words" List[String]
+        "indices":Tuple[int,int] //indices of index of first word in Chapter.text inclusive through index of last word also inclusive
     }
     """
     ret = {
         'name':'',
+        'text':'',
         'verses': {}
     }
     # get chapter name/title
@@ -79,20 +86,29 @@ def split_chapter_into_verses(txt:str) -> dict:
 
     # cycle through each verse
     verse_num = 1
+    first_word_index = 0
+    text_without_verse_numbers = ''
     for i in ARABIC_NUMERALS:
         verse, sep, txt = txt.partition(i)
         verse = verse.replace('\xa0','') # remove hard-space
+        verse = verse.replace('  ', ' ') # replace double space with single space
+        verse = verse.strip()   # remove extra spaces
 
         # did number exist?
         if sep == '':
             break
-
+        
+        text_without_verse_numbers = ' '.join([text_without_verse_numbers, verse])
+        words = verse.split(' ')
+        last_word_index = first_word_index + len(words)-1
         ret['verses'][verse_num] = {
             'arabic_num': sep,
-            'text': verse,
-            'words': verse.strip().split(' ')
+            'indices': [first_word_index, last_word_index]
         }
         verse_num += 1
+        first_word_index = last_word_index+1
+
+    ret['text'] = text_without_verse_numbers.strip(' ')
     return ret
 
 
