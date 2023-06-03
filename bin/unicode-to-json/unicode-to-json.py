@@ -82,7 +82,7 @@ def split_chapter_into_verses(txt:str) -> dict:
     name = parts[0]
     ret['name'] = name.strip()
     txt = parts[2]
-    txt = txt.replace('\n', '') # remove newlines
+    txt = txt.replace('\n', ' ') # replace newlines with spaces
 
     # cycle through each verse
     verse_num = 1
@@ -90,13 +90,23 @@ def split_chapter_into_verses(txt:str) -> dict:
     text_without_verse_numbers = ''
     for i in ARABIC_NUMERALS:
         verse, sep, txt = txt.partition(i)
-        verse = verse.replace('\xa0','') # remove hard-space
-        verse = verse.replace('  ', ' ') # replace double space with single space
-        verse = verse.strip()   # remove extra spaces
 
         # did number exist?
         if sep == '':
             break
+        
+        # verification/cleanup.  Extra spaces are causing problems.
+        verse = verse.replace('\xa0',' ') # normalize spaces. \xa0 is hard-space.
+        verse = verse.replace('  ', ' ') # replace double space with single space
+        verse = verse.strip()   # remove outer spaces
+        # Extra verify: filter extra inner spaces
+        words = verse.split(' ')
+        words_no_spaces = []
+        for word in words:
+            word = word.strip(' ')
+            if word != ' ' and word != '':
+                words_no_spaces.append(word)
+        verse = ' '.join(words_no_spaces)
         
         text_without_verse_numbers = ' '.join([text_without_verse_numbers, verse])
         words = verse.split(' ')
@@ -122,6 +132,7 @@ def to_obj(inpath: Path) -> dict:
     #print( f"nar: {inpath.name} , count of delimiter: { txt.count( 'سُورَةُ' ) }" )
     txt = txt.replace('\r', '') # make newlines only \n instead of \r\n for easier parsing
     txt = txt.replace('\n\n', '\n') # replace any double newlines with single newline
+    txt = txt.replace('۞', '') # Remove the decorative dot circle
     
     chs = split_into_chapters(txt)
     for i in range(len(chs)):
