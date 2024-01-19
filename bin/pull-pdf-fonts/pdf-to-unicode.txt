@@ -1,0 +1,6 @@
+converting a PDF into a unicode file takes several steps:
+1) The fonts for the pdf need to be extracted using the website: pdf2go.com
+2) Each font file is opened using FontForge and each glyph needs to be mapped to its corresponding unicode character.
+Mapping each character is done by hand.
+3) The python script is run to convert each PDF font's glyph into its unicode counterpart.
+It uses the character mapping provided in the previous step. This becomes the unicode .txt file
