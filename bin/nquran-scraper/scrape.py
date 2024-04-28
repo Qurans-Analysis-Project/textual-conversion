@@ -2,10 +2,13 @@
 import asyncio
 import aiohttp
 from models import Narrator, Difference
-from typing import List, Dict
+from typing import List, Dict, Any
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from pathlib import Path
 import time
+from json import dump, JSONEncoder
+from enum import Enum
 
 
 async def export_all_diffs(chapter_diffs: Dict[int,Dict[int,List[Difference]]]):
@@ -16,8 +19,15 @@ async def export_all_diffs(chapter_diffs: Dict[int,Dict[int,List[Difference]]]):
     the value of the verse number keys is the list of Differences in that chapter.
     save these differences to a file
     """
+
+    class customJSONEncoder(JSONEncoder):
+        def default(o:Any):
+            if isinstance(o, Enum):
+                return o.name
+
     OUTPATH = Path("generated/json/nquran/differences.json")
-    pass
+    with open(OUTPATH, encoding='utf-8') as f:
+        dump(chapter_diffs, f, ensure=False, cls=customJSONEncoder)
 
 
 async def scrape_verse(ch: int, verse: int, url: str) -> List[Difference]:
@@ -26,15 +36,71 @@ async def scrape_verse(ch: int, verse: int, url: str) -> List[Difference]:
         return tag.has_attr('class') \
         and "selectquran" in tag['class']
 
+    ret: List[Difference] = []
     VERSE_URL = url
-    async with aiohttp.ClientSession(headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/123.0.2420.97'}) as session:
-        async with session.get(VERSE_URL) as response:
-            soup = BeautifulSoup(await response.text(), features='lxml')
-            disputes = soup.find(class_="blockrwaya").find_all(filter_to_disputes, recursive=False)
-            # handle each dispute
-            for dispute in disputes:
-                pass
+    soup: BeautifulSoup
+    time.sleep(.2)
+    while True:
+        async with aiohttp.ClientSession(headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/123.0.2420.97'}) as session:
+            async with session.get(VERSE_URL) as response:
+                soup = BeautifulSoup(await response.text(), features='lxml')
+                if soup.find(class_="blockrwaya") is not None:
+                    break
+                print(f"Error page on ch:{ch} v:{verse}. Sleeping 5 seconds.")
+                time.sleep(5)
+        
+    disputes = soup.find(class_="blockrwaya").find_all(filter_to_disputes, recursive=False)
+    # handle each dispute
+    for dispute in disputes:
+        dispute: Tag
+        verse_content = dispute.find('strong', recursive=False).find('font', recursive=False).get_text(strip=True)
+        verse_text = verse_content.split('{')[1].split('}')[0]
+        
+        # disputed phrase
+        temp = dispute.find(class_="selectquran").find('h2', recursive=False)
+        temp2 = temp.find('font', recursive=False)
+        if temp2:
+            disputed_phrase = temp2.find('strong', recursive=False).text
+        else:
+            disputed_phrase = temp.find('strong', recursive=False).text
+        disputed_phrase = disputed_phrase.strip().split('{')[1].split('}')[0]
 
+        # pull each difference for the disputed phrase
+        for dif in dispute.find_all(class_='quran-page'):
+            dif: Tag
+            # pull narrators
+            narrs = []
+            narrs_tags: List[Tag] = list(dif.find(class_="rawa-list").find('div').children)
+            current_narr = ''
+            for i, tag in enumerate(narrs_tags):
+                if isinstance(tag, str):
+                    continue
+                if tag.name =='div':
+                    narrs.append(Narrator(current_narr.strip()))
+                    current_narr = ''
+                    continue
+                if i == len(narrs_tags)-1:
+                    t= tag.text.replace(u'\xa0', u'')
+                    current_narr+=f" {t}"
+                    narrs.append(Narrator(current_narr.strip()))
+                    current_narr = ''
+                else:
+                    t= tag.text.replace(u'\xa0', u'')
+                    current_narr+=f" {t}"
+
+            # pull comment
+            comment = dif.find('strong').text
+
+            # generate Differences
+            ret.append(Difference(
+                chapter_num=ch,
+                verse_num=verse,
+                verse_text=verse_text,
+                disputed_phrase=disputed_phrase,
+                narrators=narrs,
+                comment=comment
+            ))
+    return ret
 
 
 async def scrape_chapter(ch:int) -> Dict[int,List[Difference]]:
@@ -54,7 +120,7 @@ async def scrape_chapter(ch:int) -> Dict[int,List[Difference]]:
             results = await asyncio.gather(*awaitables)
             ret = {}
             for i, diffs in enumerate(results):
-                ret[i] = diffs
+                ret[i+1] = diffs
             return ret
 
 
