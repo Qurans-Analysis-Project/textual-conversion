@@ -1,0 +1,3 @@
+The embedded font files in PDFs need to be extracted to be read directly.
+https://www.pdf2go.com/extract-assets is used to do this extraction.
+Download the font files for each PDF narration and place in the the narrators folder.

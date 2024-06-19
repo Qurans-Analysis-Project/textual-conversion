@@ -1,0 +1,5 @@
+An example run command from the top directory
+python ./bin/merge-fonts/generate-glyph-excel-sheet.py \
+  --source ./generated/font-merging/qurancomplex.gov.sa/ \
+  --source ./source/islamwebdotnet/ \
+  --out ./generated/font-merging/glyph-groups.xlsx
