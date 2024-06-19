@@ -85,6 +85,3 @@ if __name__ == '__main__':
     # write out
     outpath.write_text(dumps(fonts))
     print("Complete. Exiting.")
-    
-
-    
