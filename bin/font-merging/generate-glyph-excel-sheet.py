@@ -5,6 +5,7 @@ from fontTools.ttLib.tables._c_m_a_p import table__c_m_a_p
 from fontTools.ttLib.tables._g_l_y_f import Glyph
 from fontTools.ttLib.tables.otTables import LookupList
 from fontTools.pens.recordingPen import DecomposingRecordingPen
+from fontTools.pens.freetypePen import FreeTypePen
 from fontTools.merge.cmap import _glyphsAreSame
 from argparse import ArgumentParser
 from pathlib import Path
@@ -13,6 +14,9 @@ from hashlib import md5
 from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 import openpyxl
+from PIL import ImageFont, ImageDraw, Image
+from collections import defaultdict
+from freetype import ft_errors
 
 
 def verify_inputs(inpaths_str: List[str]) -> List[Path]:
@@ -50,9 +54,9 @@ def init_excel_sheet(wb: Workbook, outpath: Path):
     cell = sheet.cell(row=2, column=1)
     cell.value = "Walking of equivalent glyphs from one distributor to another happens in intermediary sheets."
     cell = sheet.cell(row=3, column=1)
-    cell.value = "Each glyph is represented by the md5 of the glyph components, the glyph image, and the names given to this glyph as duplicates are often present with different names."
+    cell.value = "Each glyph is represented by the glyph image, the md5 of the glyph components, the rasm group name, the ijam group name, the harakat group name, and the set of names given to this glyph."
     cell = sheet.cell(row=4, column=1)
-    cell.value = "Each distributor's glyphs initially begin in the unsorted column and then by hand are sorted into distinct groups based on characteristcs such as rasm."
+    cell.value = "Each distributor's glyphs initially begin in the unsorted column and then by hand are sorted into distinct groups based on characteristics"
     wb.save(outpath)
 
 
@@ -61,9 +65,10 @@ if __name__ == '__main__':
     argp = ArgumentParser()
     argp.add_argument("--source",
                       help="""The directory path for multiple .ttf font files.
-                      The allowed structure is .../distributor-name/narrator-names/font-files.[ttf|otf]
-                      Where each narrator can have many font files and
-                      each distributor can have many narrators
+                      Can be used multiple times!
+                      Searches for .ttf & .otf
+                      The allowed structure is ...path/to/<distributor-name>
+                      The final element in the path must be the distributor name
                       Searches recursively.""",
                       required=True,
                       action='append',
@@ -82,6 +87,68 @@ if __name__ == '__main__':
 
     init_excel_sheet(workbook, out_path)
 
+    # NOTE SHOULD BE WRITTEN TO NOT OVERWRITE EXISTING WORK WHEN RUN. MAKE NEW TABS.
+    font_files = dict()
+    for inpath in inpaths:
+        print(inpath)
+        font_files[inpath] = list(Path.rglob(inpath,'*.ttf')) + list(Path.rglob(inpath,'*.otf'))
+    
+    # store output
+    all_glyph_rows = dict()
+    bad = [] # path, fontfile, name, reason
+
+    for path, fontfiles in font_files.items():
+        for fontfile in fontfiles:
+            # open
+            font = None
+            with open(fontfile, 'rb') as f:
+                font = TTFont(f, lazy=False)
+            #font.ensureDecompiled()
+
+            glyphset = font.getGlyphSet()
+            for name, glyf in glyphset.glyfTable.glyphs.items():
+                if '.notdef' in name:
+                    continue
+                glyf: Glyph
+
+                try:
+                    # get the instructions
+                    pen = DecomposingRecordingPen(glyphset)
+                    glyf.draw(pen, glyphset.glyfTable)
+                    instructions = pen.value
+                    # generate md5 hash
+                    hash = md5(usedforsecurity=False)
+                    hash.update(str(instructions).encode())
+                    md5_hex = hash.hexdigest()
+
+                    # generate the image of the glyph
+                    
+                    ftpen = FreeTypePen(glyphSet=glyphset)
+                    glyf.draw(ftpen, glyfTable=glyphset.glyfTable)
+                    glyf_image = ftpen.image(width=0, height=0, contain=True)
+
+                except ft_errors.FT_Exception as e:
+                    bad.append((path, fontfile, name, f"{type(e)}:{e}"))
+                    continue # don't save data
+
+                # save data
+                if md5_hex in all_glyph_rows:
+                    names_set: set = all_glyph_rows[md5_hex]['names']
+                    names_set.add(name)
+                    all_glyph_rows[md5_hex]['names'] = names_set
+                else:
+                    all_glyph_rows[md5_hex] = {
+                        'image':glyf_image,
+                        'names':set([name])
+                    }
+
+        # save out to excel sheet
+
+            # save PIL image
+            # https://stackoverflow.com/questions/10888969/insert-image-in-openpyxl
+            1+1
+
+
     with open("source/qurancomplex.gov.sa/UthmanicBazzi_V20/UthmanicBazzi V20.ttf", 'rb') as f:
         font1 = TTFont(f, lazy=False)
     #with open("source/qurancomplex.gov.sa/UthmanicHafs1_Ver13/UthmanicHafs1 Ver13.ttf", 'rb') as f:
@@ -91,7 +158,7 @@ if __name__ == '__main__':
     font2.ensureDecompiled()
     
     glyphset= font1.getGlyphSet()
-    for key, val in glyphset.glyphsMapping.glyphs.items():
+    for key, val in glyphset.glyfTable.glyphs.items():
         val: Glyph
         print(key)
         print(val)
