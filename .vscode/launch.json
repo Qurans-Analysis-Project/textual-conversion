@@ -8,10 +8,26 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "./bin/font-merging/generate-glyph-excel-sheet.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["--source", "./generated/text", "--out", "./generated/json/"]
-        }
+            "justMyCode": false,
+            "args": [
+                "--source", "./generated/font-merging/qurancomplex.gov.sa/", 
+                "--source", "./generated/font-merging/islamwebdotnet/",
+                "--out", "./generated/font-merging/glyph-groups.xlsx"
+            ]
+        }/*,
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "./bin/pull-pdf-fonts/pull-pdf-fonts.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--source", "./source/islamwebdotnet",
+                "--out", "./generated"
+            ]
+        }*/
     ]
 }

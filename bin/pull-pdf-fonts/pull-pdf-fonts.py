@@ -43,7 +43,13 @@ def pull_fonts(pdf: Path) -> list:
     reader = PdfReader(pdf.open('rb'))
     for page in reader.pages:
         fonts.update(page._get_fonts()[1])
+        #page.extract_text(visitor_text=visitor_body)
     return list(fonts)
+
+
+def visitor_body(text, cm, tm, font_dict, font_size):
+    print(f"text:{text}")
+    print(type(font_dict))
 
 
 if __name__ == '__main__':

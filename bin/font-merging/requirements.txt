@@ -3,3 +3,4 @@ uharfbuzz
 openpyxl
 pillow
 freetype-py
+tqdm

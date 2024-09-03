@@ -1,22 +1,25 @@
-from fontTools.ttLib.ttFont import TTFont
-from fontTools.ttLib.tables.G_S_U_B_ import table_G_S_U_B_
-from fontTools.ttLib.tables._g_c_i_d import table__g_c_i_d
-from fontTools.ttLib.tables._c_m_a_p import table__c_m_a_p
-from fontTools.ttLib.tables._g_l_y_f import Glyph
-from fontTools.ttLib.tables.otTables import LookupList
-from fontTools.pens.recordingPen import DecomposingRecordingPen
-from fontTools.pens.freetypePen import FreeTypePen
-from fontTools.merge.cmap import _glyphsAreSame
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import Tuple, List
 from hashlib import md5
+from fontTools.ttLib.ttFont import TTFont
+from fontTools.ttLib.tables._g_l_y_f import Glyph
+from fontTools.pens.recordingPen import DecomposingRecordingPen
+from fontTools.pens.freetypePen import FreeTypePen
+from fontTools.merge.cmap import _glyphsAreSame
 from openpyxl import Workbook
+import openpyxl.drawing.image
 from openpyxl.worksheet.worksheet import Worksheet
 import openpyxl
-from PIL import ImageFont, ImageDraw, Image
-from collections import defaultdict
 from freetype import ft_errors
+from PIL.Image import Image as PILImage
+from PIL.Image import open as PILImageOpen
+from PIL.Image import Resampling
+from tqdm import tqdm
+from os import mkdir
+
+
+ROW_BASE_HEIGHT = 28
 
 
 def verify_inputs(inpaths_str: List[str]) -> List[Path]:
@@ -34,7 +37,7 @@ def verify_inputs(inpaths_str: List[str]) -> List[Path]:
     return (ret)
 
 
-def verify_output(outpath: str) -> Workbook:
+def verify_output(outpath: str) -> Tuple[Workbook, Path]:
     outp = Path(outpath[0])
     if outp.is_dir():
         raise FileNotFoundError(f"Argument --out only accepts a path to open/create an xlsx file. Got {outp.absolute()}")
@@ -94,18 +97,33 @@ if __name__ == '__main__':
         font_files[inpath] = list(Path.rglob(inpath,'*.ttf')) + list(Path.rglob(inpath,'*.otf'))
     
     # store output
-    all_glyph_rows = dict()
     bad = [] # path, fontfile, name, reason
 
-    for path, fontfiles in font_files.items():
-        for fontfile in fontfiles:
+    font_files_keys = list(font_files.keys())
+    for i, font_files_key in enumerate(font_files_keys):
+        font_files_key: Path
+        fontfiles: List[Path] = font_files[font_files_key]
+
+        # store output
+        all_glyph_rows = dict()
+
+        for j, fontfile in enumerate(fontfiles):
+            # udpate
+            print(f"path: {font_files_key}\t {i+1}/{len(font_files_keys)}\t fontfile: {fontfile} {j+1}/{len(fontfiles)}")
+
             # open
             font = None
             with open(fontfile, 'rb') as f:
                 font = TTFont(f, lazy=False)
             #font.ensureDecompiled()
 
-            glyphset = font.getGlyphSet()
+            try:
+                glyphset = font.getGlyphSet()
+            except IndexError as e:
+                print(f"ERROR: IndexError: {e}")
+                bad.append((font_files_key, fontfile, name, f"{type(e)}:{e}"))
+                continue
+
             for name, glyf in glyphset.glyfTable.glyphs.items():
                 if '.notdef' in name:
                     continue
@@ -122,13 +140,21 @@ if __name__ == '__main__':
                     md5_hex = hash.hexdigest()
 
                     # generate the image of the glyph
-                    
-                    ftpen = FreeTypePen(glyphSet=glyphset)
-                    glyf.draw(ftpen, glyfTable=glyphset.glyfTable)
-                    glyf_image = ftpen.image(width=0, height=0, contain=True)
+                    if md5_hex not in all_glyph_rows:
+                        ftpen = FreeTypePen(glyphSet=glyphset)
+                        glyf.draw(ftpen, glyfTable=glyphset.glyfTable)
+                        glyf_image = ftpen.image(width=0, height=0, contain=True)
+                        if glyf_image.size != (0,0):
+                            # resize
+                            float_height = glyf_image.size[1]
+                            if float_height == 0:
+                                float_height = 0.0001
+                            hpercent = (ROW_BASE_HEIGHT / float_height)
+                            wsize = int((float(glyf_image.size[0]) * float(hpercent)))
+                            glyf_image = glyf_image.resize((wsize, ROW_BASE_HEIGHT), Resampling.LANCZOS)
 
                 except ft_errors.FT_Exception as e:
-                    bad.append((path, fontfile, name, f"{type(e)}:{e}"))
+                    bad.append((font_files_key, fontfile, name, f"{type(e)}:{e}"))
                     continue # don't save data
 
                 # save data
@@ -141,29 +167,76 @@ if __name__ == '__main__':
                         'image':glyf_image,
                         'names':set([name])
                     }
+        
+        # construct the temp directory
+        TEMP_DIR = './delete_me_tmp'
+        TEMP_DIR_PATH = Path(TEMP_DIR)
+        if (not TEMP_DIR_PATH.exists()):
+            mkdir(TEMP_DIR)
 
-        # save out to excel sheet
+        # save this distributor's path out to excel sheet
+        distributor_name = 'unsorted_'+font_files_key.name
+        if distributor_name in workbook:
+            del workbook[distributor_name]
+        workbook.create_sheet(distributor_name)
+        dist_ws_raw = workbook[distributor_name]
+        dist_ws_raw['A1'] = 'Image'
+        dist_ws_raw['B1'] = 'MD5 Hex'
+        dist_ws_raw['C1'] = 'Rasm Group'
+        dist_ws_raw['D1'] = 'Ijam Group'
+        dist_ws_raw['E1'] = 'Harakat Group'
+        dist_ws_raw['F1'] = 'Font Names'
+        current_row = 1
+        for md5_hash, row_dict in tqdm(all_glyph_rows.items()):
+            current_row += 1
+            # Set row height
+            dist_ws_raw.row_dimensions[current_row].height = ROW_BASE_HEIGHT
+            # write PIL image
+            pil_img: PILImage = row_dict['image']
+            if pil_img.size != (0,0):
+                img_name = f'{md5_hash}.png'
+                img_path = Path(TEMP_DIR_PATH,Path(img_name))
+                pil_img.save(img_path)
+                pil_img.close()
+                pil_img = PILImageOpen(img_path)
+                pil_img.load()
+                img = openpyxl.drawing.image.Image(img_path.absolute())
+                dist_ws_raw.add_image(img=img, anchor=f'A{current_row}')
+            else:
+                img_path = None
+                dist_ws_raw[f'A{current_row}'] = 'empty-image'
+            # write md5 hash
+            dist_ws_raw[f'B{current_row}'] = md5_hash
+            # write names
+            dist_ws_raw[f'F{current_row}'] = list(row_dict['names']).__repr__()
+        
+        # Save out
+        workbook.save(out_path)
 
-            # save PIL image
-            # https://stackoverflow.com/questions/10888969/insert-image-in-openpyxl
-            1+1
+    # write out the bad rows
+    if 'bad' in workbook:
+        del workbook['bad'] # remove the old
+    workbook.create_sheet('bad')
+    bad_ws = workbook['bad']
+    bad_ws['A1'] = 'Path'
+    bad_ws['B1'] = 'Fontfile'
+    bad_ws['C1'] = 'Name'
+    bad_ws['D1'] = 'Reason'
+    current_row = 1
+    for row in bad:
+        current_row += 1
 
+        path: Path = row[0]
+        bad_ws[f'A{current_row}'] = path.__repr__()
+        fontfile: Path = row[1]
+        bad_ws[f'B{current_row}'] = fontfile.__repr__()
+        bad_ws[f'C{current_row}'] = row[2]
+        bad_ws[f'D{current_row}'] = row[3]
 
-    with open("source/qurancomplex.gov.sa/UthmanicBazzi_V20/UthmanicBazzi V20.ttf", 'rb') as f:
-        font1 = TTFont(f, lazy=False)
-    #with open("source/qurancomplex.gov.sa/UthmanicHafs1_Ver13/UthmanicHafs1 Ver13.ttf", 'rb') as f:
-    with open("generated/font-merging/islamwebdotnet/alhareth/font-0317.ttf", 'rb') as f:
-        font2 = TTFont(f, lazy=False)
-    font1.ensureDecompiled()
-    font2.ensureDecompiled()
-    
-    glyphset= font1.getGlyphSet()
-    for key, val in glyphset.glyfTable.glyphs.items():
-        val: Glyph
-        print(key)
-        print(val)
-        pen = DecomposingRecordingPen(glyphset)
-        val.draw(pen, glyphset.glyfTable)
-        pen.value
+    workbook.save(out_path)
 
-    1+1
+    # Remove the temp directory
+    for tmp_img in TEMP_DIR_PATH.glob('*'):
+        tmp_img: Path
+        tmp_img.unlink(missing_ok=True)
+    TEMP_DIR_PATH.rmdir()
