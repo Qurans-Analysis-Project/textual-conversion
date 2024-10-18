@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
                 except ft_errors.FT_Exception as e:
                     bad.append((font_files_key, fontfile, name, f"{type(e)}:{e}"))
-                    continue # don't save data
+                    glyf_image = 'error'
 
                 # save data
                 if md5_hex in all_glyph_rows:
@@ -192,8 +192,11 @@ if __name__ == '__main__':
             # Set row height
             dist_ws_raw.row_dimensions[current_row].height = ROW_BASE_HEIGHT
             # write PIL image
-            pil_img: PILImage = row_dict['image']
-            if pil_img.size != (0,0):
+            pil_img: PILImage | str = row_dict['image']
+            if type(pil_img) is str:
+                img_path = None
+                dist_ws_raw[f'A{current_row}'] = pil_img
+            elif pil_img.size != (0,0):
                 img_name = f'{md5_hash}.png'
                 img_path = Path(TEMP_DIR_PATH,Path(img_name))
                 pil_img.save(img_path)
