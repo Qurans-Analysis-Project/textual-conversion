@@ -143,9 +143,10 @@ if __name__ == '__main__':
                     if md5_hex not in all_glyph_rows:
                         ftpen = FreeTypePen(glyphSet=glyphset)
                         glyf.draw(ftpen, glyfTable=glyphset.glyfTable)
-                        glyf_image = ftpen.image(width=0, height=0, contain=True)
-                        if glyf_image.size != (0,0):
-                            # resize
+                        glyf_image = ftpen.image(contain=True)
+                        if glyf_image.size != (0,0) \
+                        and (glyf_image.size[1] > ROW_BASE_HEIGHT or glyf_image.size[1] == 0): # w,h
+                            # shrink image to cell height
                             float_height = glyf_image.size[1]
                             if float_height == 0:
                                 float_height = 0.0001
@@ -212,6 +213,7 @@ if __name__ == '__main__':
             dist_ws_raw[f'B{current_row}'] = md5_hash
             # write names
             dist_ws_raw[f'F{current_row}'] = list(row_dict['names']).__repr__()
+
         
         # Save out
         workbook.save(out_path)
